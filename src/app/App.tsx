@@ -1,16 +1,32 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 type LoginFormData = {
   username: string;
   password: string;
 };
 
+const C = {
+  bg: "#F3F4FA",
+  surface: "#FFFFFF",
+  border: "#E2E4F0",
+  primary: "#3D3A8C",
+  primarySoft: "#EDEDFB",
+  accent1: "#6C63FF",
+  accent2: "#9D7BEA",
+  text: "#1B1B2F",
+  textSoft: "#5A5A78",
+  error: "#B3403A",
+  errorPastel: "#FBEAEA",
+  success: "#1B8A5A",
+};
+
 export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
 
   const {
     register,
@@ -30,21 +46,37 @@ export default function App() {
     }, 1200);
   };
 
+  const inputStyle = (name: string, hasError: boolean): React.CSSProperties => ({
+    width: "100%",
+    height: 44,
+    borderRadius: 9,
+    border: hasError
+      ? `1.5px solid ${C.error}`
+      : focused === name
+      ? `1.5px solid ${C.accent1}`
+      : `1.5px solid ${C.border}`,
+    background: hasError ? C.errorPastel : focused === name ? C.surface : "#FAFAFA",
+    padding: "0 14px",
+    color: C.text,
+    fontSize: "0.9375rem",
+    outline: "none",
+    boxSizing: "border-box" as const,
+    transition: "border-color 0.15s, background 0.15s",
+    fontFamily: "inherit",
+  });
+
   if (loginSuccess) {
     return (
-      <div className="size-full flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto">
-            <svg className="w-8 h-8 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: C.bg, fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#E6F4EE", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke={C.success} strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-foreground">Bienvenido de nuevo</h2>
-          <p className="text-muted-foreground text-sm">Has iniciado sesión correctamente.</p>
-          <button
-            onClick={() => setLoginSuccess(false)}
-            className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
-          >
+          <p style={{ color: C.text, fontSize: "1.0625rem", fontWeight: 600, margin: 0 }}>Bienvenido de nuevo</p>
+          <p style={{ color: C.textSoft, fontSize: "0.875rem", margin: 0 }}>Has iniciado sesión correctamente.</p>
+          <button onClick={() => setLoginSuccess(false)} style={{ color: C.accent1, fontSize: "0.875rem", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             Cerrar sesión
           </button>
         </div>
@@ -53,120 +85,177 @@ export default function App() {
   }
 
   return (
-    <div className="size-full flex items-center justify-center bg-background px-4">
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: C.bg,
+        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+        padding: "0 16px",
+        boxSizing: "border-box",
+      }}
+    >
       {/* MARKER-MAKE-KIT-INVOKED */}
-      <div className="w-full max-w-sm">
-        <div className="mb-10">
-          <div className="w-8 h-8 bg-primary rounded-sm mb-8" />
-          <h1 className="text-foreground mb-1">Iniciar sesión</h1>
-          <p className="text-muted-foreground text-sm">
-            Ingresa tus credenciales para continuar.
-          </p>
+      <div style={{ width: "100%", maxWidth: 360 }}>
+
+        {/* Orb + wordmark */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, marginBottom: 28 }}>
+          <div style={{ position: "relative", width: 52, height: 52 }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: "50%",
+              background: `radial-gradient(circle at 35% 35%, ${C.accent1}, ${C.accent2})`,
+              boxShadow: `0 8px 24px ${C.accent1}55`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3 L20 18 H4 Z" fill="white" opacity="0.9" />
+                <circle cx="12" cy="14" r="2.2" fill="white" opacity="0.6" />
+              </svg>
+            </div>
+          </div>
+          <span style={{
+            fontSize: "1.4375rem",
+            fontWeight: 700,
+            letterSpacing: "-0.03em",
+            background: `linear-gradient(135deg, ${C.primary}, ${C.accent2})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}>
+            AURA
+          </span>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-          <div className="space-y-2">
-            <label htmlFor="username" className="text-foreground text-sm block">
-              Usuario
-            </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <User size={16} />
-              </span>
+        {/* Card */}
+        <div style={{
+          background: C.surface,
+          borderRadius: 12,
+          border: `1px solid ${C.border}`,
+          padding: "32px 28px",
+          boxShadow: "0 2px 16px rgba(60,58,140,0.07)",
+        }}>
+          <div style={{ marginBottom: 24, textAlign: "center" }}>
+            <p style={{ color: C.text, fontSize: "1.375rem", fontWeight: 600, margin: 0, letterSpacing: "-0.02em" }}>
+              Iniciar sesión
+            </p>
+            <p style={{ color: C.textSoft, fontSize: "0.875rem", margin: "4px 0 0" }}>
+              Accede a tu cuenta Aura
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", gap: 14 }} noValidate>
+
+            {/* Username */}
+            <div>
+              <label style={{ display: "block", color: C.textSoft, fontSize: "0.6875rem", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 6 }}>
+                Usuario
+              </label>
               <input
                 id="username"
                 type="text"
                 placeholder="tu.usuario"
                 autoComplete="username"
-                className={[
-                  "w-full h-10 pl-9 pr-3 rounded-md bg-input-background text-foreground placeholder:text-muted-foreground",
-                  "border transition-colors outline-none",
-                  "focus:border-foreground focus:bg-background",
-                  errors.username ? "border-destructive" : "border-border",
-                ].join(" ")}
+                style={inputStyle("username", !!errors.username)}
+                onFocus={() => setFocused("username")}
+                onBlur={() => setFocused(null)}
                 {...register("username", {
                   required: "El usuario es obligatorio.",
                   minLength: { value: 3, message: "Mínimo 3 caracteres." },
                 })}
               />
+              {errors.username && (
+                <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 5 }}>
+                  <span style={{ display: "inline-flex", background: C.errorPastel, color: C.error, fontSize: "0.6875rem", fontWeight: 600, borderRadius: 99, padding: "2px 8px", letterSpacing: "0.02em" }}>
+                    {errors.username.message}
+                  </span>
+                </div>
+              )}
             </div>
-            {errors.username && (
-              <p className="text-destructive text-xs">{errors.username.message}</p>
-            )}
-          </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-foreground text-sm block">
-                Contraseña
-              </label>
-              <button
-                type="button"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                ¿Olvidaste tu contraseña?
-              </button>
+            {/* Password */}
+            <div>
+              <div style={{ marginBottom: 6 }}>
+                <label style={{ color: C.textSoft, fontSize: "0.6875rem", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase" }}>
+                  Contraseña
+                </label>
+              </div>
+              <div style={{ position: "relative" }}>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  style={{ ...inputStyle("password", !!errors.password), paddingRight: 40 }}
+                  onFocus={() => setFocused("password")}
+                  onBlur={() => setFocused(null)}
+                  {...register("password", {
+                    required: "La contraseña es obligatoria.",
+                    minLength: { value: 6, message: "Mínimo 6 caracteres." },
+                  })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(v => !v)}
+                  style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", color: C.textSoft, background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0 }}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {errors.password && (
+                <div style={{ marginTop: 5 }}>
+                  <span style={{ display: "inline-flex", background: C.errorPastel, color: C.error, fontSize: "0.6875rem", fontWeight: 600, borderRadius: 99, padding: "2px 8px", letterSpacing: "0.02em" }}>
+                    {errors.password.message}
+                  </span>
+                </div>
+              )}
             </div>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <Lock size={16} />
-              </span>
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                autoComplete="current-password"
-                className={[
-                  "w-full h-10 pl-9 pr-10 rounded-md bg-input-background text-foreground placeholder:text-muted-foreground",
-                  "border transition-colors outline-none",
-                  "focus:border-foreground focus:bg-background",
-                  errors.password ? "border-destructive" : "border-border",
-                ].join(" ")}
-                {...register("password", {
-                  required: "La contraseña es obligatoria.",
-                  minLength: { value: 6, message: "Mínimo 6 caracteres." },
-                })}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-destructive text-xs">{errors.password.message}</p>
-            )}
-          </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={[
-              "w-full h-10 rounded-md bg-primary text-primary-foreground transition-opacity",
-              "hover:opacity-90 active:opacity-75 disabled:opacity-50 disabled:cursor-not-allowed",
-              "flex items-center justify-center gap-2",
-            ].join(" ")}
-          >
-            {isLoading ? (
-              <>
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-                Verificando...
-              </>
-            ) : (
-              "Entrar"
-            )}
-          </button>
-        </form>
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                width: "100%",
+                height: 44,
+                borderRadius: 9,
+                background: isLoading ? C.accent2 : `linear-gradient(135deg, ${C.accent1}, ${C.accent2})`,
+                color: "white",
+                border: "none",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                cursor: isLoading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                marginTop: 4,
+                letterSpacing: "-0.01em",
+                fontFamily: "inherit",
+                boxShadow: isLoading ? "none" : `0 4px 14px ${C.accent1}44`,
+                transition: "opacity 0.15s, box-shadow 0.15s",
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin" style={{ width: 16, height: 16 }} viewBox="0 0 24 24" fill="none">
+                    <circle style={{ opacity: 0.3 }} cx="12" cy="12" r="10" stroke="white" strokeWidth="3" />
+                    <path style={{ opacity: 0.9 }} fill="white" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Verificando…
+                </>
+              ) : (
+                "Continuar"
+              )}
+            </button>
+          </form>
+        </div>
 
-        <p className="mt-8 text-center text-xs text-muted-foreground">
-          Demo: <span className="text-foreground">admin</span> /{" "}
-          <span className="text-foreground">password123</span>
+        {/* Footer hint */}
+        <p style={{ textAlign: "center", marginTop: 20, color: C.textSoft, fontSize: "0.75rem" }}>
+          Demo: <span style={{ color: C.text, fontWeight: 500 }}>admin</span> / <span style={{ color: C.text, fontWeight: 500 }}>password123</span>
         </p>
       </div>
     </div>
